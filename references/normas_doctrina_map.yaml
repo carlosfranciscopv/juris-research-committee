@@ -1,0 +1,507 @@
+# Mapeo institución jurídica → sinónimos + normas + antónimos.
+# Corazón del triage 100% determinístico. Cada entrada permite:
+#   - Detectar la institución en la tesis del usuario (preflight + 01)
+#   - Generar variantes Solr (01_expand_query)
+#   - Detectar pronunciamiento expreso en sentencias (05_triage Test 1)
+#   - Match de normas centrales (05_triage Test 2)
+#   - Detectar adversidad (polaridad antónima)
+#
+# Ámbitos: civil, comercial, administrativo, laboral, procesal, tributario.
+# Foco: instituciones comunes en práctica de proyectos/infraestructura (Dentons),
+# civil general, comercial, contratación pública.
+#
+# Schema por institución:
+#   sinonimos: [list de variantes textuales]
+#   normas: [list "CUERPO art X" como aparecen en sentencias]
+#   antonimos_resolucion: [pares verbales positivo/negativo para detectar polaridad]
+#   ambito: civil|comercial|administrativo|laboral|procesal|tributario
+#   instituciones_relacionadas: [otras claves del yaml]
+#   tipo_recurso_tipico: [casacion-fondo, queja, proteccion, ...]
+
+instituciones:
+
+  # ============== CIVIL — OBLIGACIONES Y CONTRATOS ==============
+
+  responsabilidad solidaria:
+    sinonimos: ["in solidum", "obligación solidaria", "responder solidariamente",
+                 "deudores solidarios", "solidaridad pasiva"]
+    normas: ["CC art 1511", "CC art 1512", "CC art 1514", "CC art 1518",
+             "CC art 1522", "Ley 19.886 art 6", "CT art 183-A", "CT art 183-B"]
+    antonimos_resolucion: ["responde / no responde", "es solidario / no es solidario",
+                            "se condena solidariamente / se rechaza solidaridad"]
+    ambito: civil
+    instituciones_relacionadas: ["responsabilidad subsidiaria", "obligación divisible"]
+    tipo_recurso_tipico: ["casacion-fondo", "casacion-forma"]
+
+  responsabilidad subsidiaria:
+    sinonimos: ["responder subsidiariamente", "deudor subsidiario", "subsidiariedad"]
+    normas: ["CC art 1535", "CT art 183-A", "CT art 183-B", "Ley 19.886 art 6"]
+    antonimos_resolucion: ["responde subsidiariamente / no responde subsidiariamente"]
+    ambito: civil
+    instituciones_relacionadas: ["responsabilidad solidaria", "fianza"]
+
+  responsabilidad contractual:
+    sinonimos: ["incumplimiento contractual", "responsabilidad por incumplimiento",
+                 "indemnización contractual", "daños contractuales"]
+    normas: ["CC art 1545", "CC art 1546", "CC art 1547", "CC art 1556",
+             "CC art 1557", "CC art 1558", "CC art 1567", "CC art 1568"]
+    antonimos_resolucion: ["incumple / cumple", "responde / no responde",
+                            "se acoge la indemnización / se rechaza"]
+    ambito: civil
+    instituciones_relacionadas: ["fuerza mayor", "caso fortuito", "indemnización de perjuicios"]
+
+  responsabilidad extracontractual:
+    sinonimos: ["responsabilidad aquiliana", "delito civil", "cuasidelito civil",
+                 "daños extracontractuales"]
+    normas: ["CC art 2314", "CC art 2316", "CC art 2317", "CC art 2320",
+             "CC art 2329", "CC art 2330", "CC art 2331", "CC art 2332"]
+    antonimos_resolucion: ["procede la indemnización / no procede",
+                            "hay daño / no hay daño"]
+    ambito: civil
+    instituciones_relacionadas: ["daño moral", "lucro cesante", "daño emergente"]
+
+  fuerza mayor:
+    sinonimos: ["caso fortuito", "imprevisto irresistible", "evento fortuito"]
+    normas: ["CC art 45", "CC art 1547", "CC art 1670", "CC art 1672"]
+    antonimos_resolucion: ["constituye fuerza mayor / no constituye fuerza mayor",
+                            "exime de responsabilidad / no exime"]
+    ambito: civil
+    instituciones_relacionadas: ["responsabilidad contractual", "imprevisión"]
+
+  imprevisión:
+    sinonimos: ["teoría de la imprevisión", "rebus sic stantibus",
+                 "excesiva onerosidad sobreviniente", "alteración de circunstancias"]
+    normas: ["CC art 1545", "CC art 1546", "CC art 1560"]
+    antonimos_resolucion: ["procede revisión / no procede revisión",
+                            "se ajusta el contrato / se mantiene"]
+    ambito: civil
+    instituciones_relacionadas: ["fuerza mayor", "buena fe contractual"]
+
+  buena fe contractual:
+    sinonimos: ["buena fe", "ejecución de buena fe", "principio de buena fe"]
+    normas: ["CC art 1546", "CC art 707", "CC art 1683", "CCom art 96"]
+    antonimos_resolucion: ["actuó de buena fe / actuó de mala fe"]
+    ambito: civil
+    instituciones_relacionadas: ["abuso del derecho", "imprevisión"]
+
+  abuso del derecho:
+    sinonimos: ["ejercicio abusivo", "abuso de derecho", "uso abusivo del derecho"]
+    normas: ["CC art 1546", "CC art 2314", "Constitución art 19 N° 24"]
+    antonimos_resolucion: ["hay abuso / no hay abuso"]
+    ambito: civil
+    instituciones_relacionadas: ["buena fe contractual"]
+
+  vicios redhibitorios:
+    sinonimos: ["vicios ocultos", "redhibitoria", "acción redhibitoria",
+                 "acción quanti minoris", "rebaja del precio"]
+    normas: ["CC art 1857", "CC art 1858", "CC art 1860", "CC art 1861",
+             "CC art 1862", "CC art 1863", "CC art 1864", "CC art 1866",
+             "CC art 1869"]
+    antonimos_resolucion: ["constituye vicio redhibitorio / no constituye",
+                            "se acoge la redhibitoria / se rechaza"]
+    ambito: civil
+    instituciones_relacionadas: ["evicción", "compraventa"]
+
+  evicción:
+    sinonimos: ["saneamiento de la evicción", "obligación de saneamiento"]
+    normas: ["CC art 1837", "CC art 1838", "CC art 1839", "CC art 1840",
+             "CC art 1843", "CC art 1847", "CC art 1850", "CC art 1856"]
+    antonimos_resolucion: ["procede saneamiento / no procede saneamiento"]
+    ambito: civil
+    instituciones_relacionadas: ["vicios redhibitorios", "compraventa"]
+
+  nulidad absoluta:
+    sinonimos: ["nulidad de pleno derecho", "nulidad absoluta", "objeto ilícito",
+                 "causa ilícita", "incapacidad absoluta"]
+    normas: ["CC art 1681", "CC art 1682", "CC art 1683", "CC art 1466",
+             "CC art 1467"]
+    antonimos_resolucion: ["es nulo / es válido", "se declara la nulidad / se rechaza"]
+    ambito: civil
+    instituciones_relacionadas: ["nulidad relativa", "ineficacia"]
+
+  nulidad relativa:
+    sinonimos: ["rescisión", "nulidad relativa", "vicios del consentimiento",
+                 "error", "fuerza", "dolo"]
+    normas: ["CC art 1681", "CC art 1682", "CC art 1684", "CC art 1691",
+             "CC art 1451", "CC art 1452", "CC art 1453", "CC art 1454",
+             "CC art 1456", "CC art 1457", "CC art 1458"]
+    antonimos_resolucion: ["procede la rescisión / no procede"]
+    ambito: civil
+    instituciones_relacionadas: ["nulidad absoluta", "lesión enorme"]
+
+  resolución contractual:
+    sinonimos: ["resolución del contrato", "condición resolutoria tácita",
+                 "acción resolutoria"]
+    normas: ["CC art 1489", "CC art 1873", "CC art 1875", "CC art 1877"]
+    antonimos_resolucion: ["procede la resolución / no procede"]
+    ambito: civil
+    instituciones_relacionadas: ["responsabilidad contractual", "indemnización de perjuicios"]
+
+  indemnización de perjuicios:
+    sinonimos: ["daños y perjuicios", "indemnización", "lucro cesante",
+                 "daño emergente", "daño moral"]
+    normas: ["CC art 1556", "CC art 1557", "CC art 1558", "CC art 1559",
+             "CC art 2314", "CC art 2329"]
+    antonimos_resolucion: ["procede la indemnización / no procede",
+                            "se condena al pago / se absuelve"]
+    ambito: civil
+    instituciones_relacionadas: ["responsabilidad contractual", "responsabilidad extracontractual"]
+
+  enriquecimiento sin causa:
+    sinonimos: ["enriquecimiento injusto", "in rem verso", "actio in rem verso"]
+    normas: ["CC art 1467", "CC art 2295", "CC art 2300"]
+    antonimos_resolucion: ["hay enriquecimiento sin causa / no hay"]
+    ambito: civil
+
+  prescripción extintiva:
+    sinonimos: ["prescripción liberatoria", "extinción por el tiempo",
+                 "prescripción adquisitiva"]
+    normas: ["CC art 2492", "CC art 2493", "CC art 2497", "CC art 2503",
+             "CC art 2514", "CC art 2515", "CC art 2518", "CC art 2520"]
+    antonimos_resolucion: ["está prescrita / no está prescrita",
+                            "se acoge prescripción / se rechaza"]
+    ambito: civil
+    instituciones_relacionadas: ["caducidad", "interrupción de prescripción"]
+
+  caducidad:
+    sinonimos: ["plazo de caducidad", "decae el derecho"]
+    normas: ["CC art 2492"]
+    antonimos_resolucion: ["caduca / no caduca", "está caducada / vigente"]
+    ambito: civil
+
+  # ============== CONTRATOS DE OBRA Y CONSTRUCCIÓN ==============
+
+  contrato de obra:
+    sinonimos: ["contrato de construcción", "arrendamiento de obra",
+                 "ejecución de obra", "obra material", "obra a suma alzada"]
+    normas: ["CC art 1996", "CC art 1997", "CC art 1999", "CC art 2000",
+             "CC art 2001", "CC art 2002", "CC art 2003"]
+    antonimos_resolucion: ["es contrato de obra / es contrato de servicios",
+                            "se acoge / se rechaza"]
+    ambito: civil
+    instituciones_relacionadas: ["responsabilidad solidaria", "garantía decenal",
+                                    "obras adicionales"]
+
+  garantía decenal:
+    sinonimos: ["responsabilidad decenal", "responsabilidad del constructor",
+                 "garantía de la construcción", "ruina del edificio"]
+    normas: ["CC art 2003 N° 3", "Ley 19.472 art 18", "OGUC", "LGUC art 18"]
+    antonimos_resolucion: ["procede garantía decenal / no procede"]
+    ambito: civil
+    instituciones_relacionadas: ["contrato de obra", "vicios redhibitorios"]
+
+  obras adicionales:
+    sinonimos: ["obras extraordinarias", "ampliación de obra", "trabajos adicionales",
+                 "modificaciones de obra"]
+    normas: ["CC art 2003 N° 1", "CC art 2003 N° 2", "Ley 19.886"]
+    antonimos_resolucion: ["procede pago obras adicionales / no procede"]
+    ambito: civil
+    instituciones_relacionadas: ["contrato de obra", "obras a suma alzada"]
+
+  recepción de obra:
+    sinonimos: ["recepción provisoria", "recepción definitiva",
+                 "recepción de la obra", "entrega de obra"]
+    normas: ["CC art 1996", "Ley 19.886 art 25", "DS 250/2004"]
+    antonimos_resolucion: ["se recepciona / no se recepciona",
+                            "hay recepción / no hay recepción"]
+    ambito: civil
+    instituciones_relacionadas: ["contrato de obra"]
+
+  multas por atraso:
+    sinonimos: ["cláusula penal", "multa contractual", "atraso entrega obra"]
+    normas: ["CC art 1535", "CC art 1542", "CC art 1543", "Ley 19.886"]
+    antonimos_resolucion: ["procede la multa / no procede la multa"]
+    ambito: civil
+    instituciones_relacionadas: ["contrato de obra", "obras adicionales"]
+
+  # ============== CONTRATACIÓN PÚBLICA ==============
+
+  contrato administrativo:
+    sinonimos: ["contratación administrativa", "contrato público",
+                 "contrato MOP", "contrato del Estado"]
+    normas: ["Ley 19.886", "DS 250/2004", "DFL 850 MOP", "DS 75 MOP",
+             "Ley 18.575 art 3"]
+    antonimos_resolucion: ["es contrato administrativo / es contrato civil"]
+    ambito: administrativo
+    instituciones_relacionadas: ["concesión de obra pública", "licitación pública"]
+
+  concesión de obra pública:
+    sinonimos: ["concesión MOP", "ley de concesiones", "concesionaria",
+                 "DFL 164", "Ley de Concesiones"]
+    normas: ["DFL 164/1991 MOP", "Ley 19.886", "DS 956 MOP", "DFL 850 MOP"]
+    antonimos_resolucion: ["se acoge / se rechaza"]
+    ambito: administrativo
+    instituciones_relacionadas: ["contrato administrativo", "comisión arbitral concesiones"]
+
+  comisión arbitral concesiones:
+    sinonimos: ["comisión conciliadora", "panel técnico concesiones",
+                 "arbitraje concesiones MOP", "comisión arbitral"]
+    normas: ["DFL 164/1991 MOP art 36", "DFL 164/1991 MOP art 36 bis"]
+    antonimos_resolucion: ["procede competencia / no procede"]
+    ambito: administrativo
+    instituciones_relacionadas: ["concesión de obra pública"]
+
+  licitación pública:
+    sinonimos: ["bases de licitación", "proceso licitatorio", "compra pública"]
+    normas: ["Ley 19.886", "DS 250/2004", "Ley 19.880"]
+    antonimos_resolucion: ["se adjudica / se rechaza adjudicación"]
+    ambito: administrativo
+    instituciones_relacionadas: ["contrato administrativo"]
+
+  ius variandi:
+    sinonimos: ["modificación unilateral", "potestad modificatoria",
+                 "modificación contrato administrativo"]
+    normas: ["Ley 19.886 art 13", "DS 250/2004 art 77", "DFL 164 MOP"]
+    antonimos_resolucion: ["procede ius variandi / no procede"]
+    ambito: administrativo
+    instituciones_relacionadas: ["contrato administrativo", "equilibrio económico"]
+
+  equilibrio económico contrato:
+    sinonimos: ["ecuación económica", "equilibrio financiero",
+                 "restablecimiento del equilibrio"]
+    normas: ["Ley 19.886", "DFL 164 MOP art 22", "Ley 19.880"]
+    antonimos_resolucion: ["se afecta el equilibrio / no se afecta"]
+    ambito: administrativo
+    instituciones_relacionadas: ["ius variandi", "imprevisión"]
+
+  # ============== ADMINISTRATIVO Y CONSTITUCIONAL ==============
+
+  recurso de protección:
+    sinonimos: ["protección constitucional", "acción de protección",
+                 "garantías constitucionales"]
+    normas: ["Constitución art 20", "Constitución art 19", "AA Protección"]
+    antonimos_resolucion: ["se acoge la protección / se rechaza"]
+    ambito: administrativo
+    tipo_recurso_tipico: ["proteccion"]
+
+  recurso de amparo económico:
+    sinonimos: ["amparo económico", "Ley 18.971"]
+    normas: ["Ley 18.971", "Constitución art 19 N° 21"]
+    ambito: administrativo
+    tipo_recurso_tipico: ["amparo-economico"]
+
+  acto administrativo:
+    sinonimos: ["resolución administrativa", "decreto", "acto reglado",
+                 "potestad discrecional"]
+    normas: ["Ley 19.880", "Ley 18.575"]
+    antonimos_resolucion: ["es válido / es nulo", "es legal / es ilegal"]
+    ambito: administrativo
+
+  silencio administrativo:
+    sinonimos: ["silencio positivo", "silencio negativo", "rechazo presunto"]
+    normas: ["Ley 19.880 art 64", "Ley 19.880 art 65", "Ley 19.880 art 66"]
+    ambito: administrativo
+
+  potestad sancionatoria:
+    sinonimos: ["sanción administrativa", "procedimiento sancionatorio",
+                 "potestad disciplinaria"]
+    normas: ["Ley 19.880", "Ley 18.575 art 7"]
+    antonimos_resolucion: ["es legítima la sanción / es ilegítima"]
+    ambito: administrativo
+
+  desviación de poder:
+    sinonimos: ["abuso de poder", "exceso de poder"]
+    normas: ["Ley 19.880", "Constitución art 7"]
+    ambito: administrativo
+
+  # ============== SOCIETARIO Y COMERCIAL ==============
+
+  responsabilidad de los directores:
+    sinonimos: ["responsabilidad directorio", "deber de cuidado director",
+                 "deber fiduciario"]
+    normas: ["LSA art 41", "LSA art 42", "LSA art 44", "LSA art 50",
+             "LSA art 133", "LSA art 133 bis"]
+    ambito: comercial
+
+  abuso de la personalidad jurídica:
+    sinonimos: ["levantamiento del velo corporativo", "desestimación PJ",
+                 "lifting the veil"]
+    normas: ["CC art 545", "CCom"]
+    ambito: comercial
+
+  fusión y absorción:
+    sinonimos: ["fusión por absorción", "fusión por creación", "absorción social"]
+    normas: ["LSA art 99", "LSA art 100", "LSA art 102"]
+    ambito: comercial
+
+  # ============== LABORAL ==============
+
+  subcontratación:
+    sinonimos: ["régimen de subcontratación", "contratista", "subcontratista",
+                 "Ley 20.123"]
+    normas: ["CT art 183-A", "CT art 183-B", "CT art 183-C", "CT art 183-D",
+             "CT art 183-E", "Ley 20.123"]
+    antonimos_resolucion: ["existe subcontratación / no existe",
+                            "responde solidariamente / responde subsidiariamente"]
+    ambito: laboral
+    instituciones_relacionadas: ["responsabilidad solidaria", "responsabilidad subsidiaria"]
+
+  despido injustificado:
+    sinonimos: ["despido improcedente", "indemnización por despido",
+                 "tutela laboral"]
+    normas: ["CT art 161", "CT art 162", "CT art 163", "CT art 168",
+             "CT art 489"]
+    antonimos_resolucion: ["es injustificado / es justificado"]
+    ambito: laboral
+
+  unidad económica:
+    sinonimos: ["holding empresarial", "grupo de empresas", "empresas relacionadas"]
+    normas: ["CT art 3", "CT art 507"]
+    ambito: laboral
+
+  # ============== PROCESAL ==============
+
+  casación en el fondo:
+    sinonimos: ["recurso de casación fondo", "casación de fondo",
+                 "infracción de ley con influencia"]
+    normas: ["CPC art 767", "CPC art 768", "CPC art 772", "CPC art 785"]
+    antonimos_resolucion: ["se acoge la casación / se rechaza la casación"]
+    ambito: procesal
+    tipo_recurso_tipico: ["casacion-fondo"]
+
+  casación en la forma:
+    sinonimos: ["recurso de casación forma", "casación de forma",
+                 "infracción procesal"]
+    normas: ["CPC art 768", "CPC art 769", "CPC art 770"]
+    ambito: procesal
+    tipo_recurso_tipico: ["casacion-forma"]
+
+  recurso de queja:
+    sinonimos: ["queja disciplinaria", "falta o abuso grave"]
+    normas: ["COT art 545", "COT art 549", "CPC"]
+    ambito: procesal
+    tipo_recurso_tipico: ["queja"]
+
+  cosa juzgada:
+    sinonimos: ["res judicata", "cosa juzgada material", "cosa juzgada formal"]
+    normas: ["CPC art 175", "CPC art 176", "CPC art 177", "CPC art 178"]
+    antonimos_resolucion: ["existe cosa juzgada / no existe"]
+    ambito: procesal
+
+  legitimación activa:
+    sinonimos: ["legitimación", "interés en obrar", "titularidad de la acción"]
+    normas: ["CPC art 18"]
+    antonimos_resolucion: ["tiene legitimación / no tiene legitimación"]
+    ambito: procesal
+
+  ultra petita:
+    sinonimos: ["ultrapetita", "extrapetita", "fallo más allá de lo pedido"]
+    normas: ["CPC art 768 N° 4", "CPC art 170"]
+    ambito: procesal
+
+  prueba pericial:
+    sinonimos: ["informe de peritos", "pericia", "dictamen pericial"]
+    normas: ["CPC art 409", "CPC art 415", "CPC art 425"]
+    ambito: procesal
+
+  # ============== INMOBILIARIO ==============
+
+  promesa de compraventa:
+    sinonimos: ["contrato de promesa", "promesa", "ejecución forzada de promesa"]
+    normas: ["CC art 1554"]
+    antonimos_resolucion: ["se acoge ejecución / se rechaza"]
+    ambito: civil
+
+  copropiedad inmobiliaria:
+    sinonimos: ["ley de copropiedad", "Ley 19.537", "comunidad de copropietarios"]
+    normas: ["Ley 19.537", "Ley 21.442"]
+    ambito: civil
+
+  servidumbre:
+    sinonimos: ["servidumbre legal", "servidumbre de paso", "servidumbre voluntaria"]
+    normas: ["CC art 820", "CC art 822", "CC art 826", "CC art 847"]
+    ambito: civil
+
+  expropiación:
+    sinonimos: ["expropiación por causa de utilidad pública", "DL 2186"]
+    normas: ["Constitución art 19 N° 24", "DL 2186/1978", "Ley 18.349"]
+    antonimos_resolucion: ["procede la expropiación / no procede",
+                            "indemnización justa / insuficiente"]
+    ambito: administrativo
+
+  # ============== MISCELÁNEAS RELEVANTES ==============
+
+  arbitraje:
+    sinonimos: ["arbitraje comercial", "laudo arbitral", "compromiso arbitral",
+                 "cláusula compromisoria", "arbitraje internacional"]
+    normas: ["COT art 222", "CPC art 628", "Ley 19.971"]
+    antonimos_resolucion: ["procede arbitraje / no procede"]
+    ambito: comercial
+
+  acción de reembolso:
+    sinonimos: ["acción in rem verso", "acción de regreso", "subrogación"]
+    normas: ["CC art 1522", "CC art 1610", "CC art 2370"]
+    ambito: civil
+
+  fianza:
+    sinonimos: ["contrato de fianza", "fiador", "garantía personal"]
+    normas: ["CC art 2335", "CC art 2342", "CC art 2350", "CC art 2381"]
+    ambito: civil
+
+  hipoteca:
+    sinonimos: ["garantía hipotecaria", "constitución de hipoteca"]
+    normas: ["CC art 2407", "CC art 2418", "CC art 2424", "CC art 2434"]
+    ambito: civil
+
+  prenda:
+    sinonimos: ["prenda sin desplazamiento", "Ley 20.190"]
+    normas: ["CC art 2384", "Ley 20.190", "Ley 18.112"]
+    ambito: civil
+
+  leasing:
+    sinonimos: ["arrendamiento financiero", "leasing financiero",
+                 "leasing operativo", "lease back"]
+    normas: ["DL 825/74 art 11", "Ley 18.010", "CCom"]
+    antonimos_resolucion: ["es leasing / es compraventa con reserva"]
+    ambito: comercial
+
+  factoring:
+    sinonimos: ["cesión de créditos", "factoring financiero", "Ley 19.983"]
+    normas: ["Ley 19.983", "CC art 1901", "CC art 1903", "CCom"]
+    ambito: comercial
+
+  # ============== TRIBUTARIO (selección) ==============
+
+  elusión tributaria:
+    sinonimos: ["norma general antielusión", "abuso de formas", "simulación tributaria",
+                 "Ley 20.780 antielusión"]
+    normas: ["CT art 4 bis", "CT art 4 ter", "CT art 4 quater", "CT art 4 quinquies",
+             "CT art 26", "CT art 100 bis"]
+    ambito: tributario
+
+  reclamación tributaria:
+    sinonimos: ["procedimiento general de reclamaciones", "tribunal tributario",
+                 "TTA"]
+    normas: ["CT art 123", "CT art 124", "CT art 132"]
+    ambito: tributario
+
+  prescripción tributaria:
+    sinonimos: ["prescripción de la acción fiscalizadora", "plazos SII"]
+    normas: ["CT art 200", "CT art 201"]
+    ambito: tributario
+
+
+# Tipos de recurso canónicos (para fase 01_expand_query)
+tipos_recurso:
+  - "casación fondo"
+  - "casación forma"
+  - "casación forma y fondo"
+  - "queja"
+  - "protección"
+  - "amparo"
+  - "nulidad laboral"
+  - "unificación de jurisprudencia"
+  - "apelación"
+
+# Cuerpos normativos abreviados (para detección en sentencias)
+cuerpos_normativos_alias:
+  CC: ["Código Civil", "C.C.", "CC", "Código civil"]
+  CCom: ["Código de Comercio", "C.Com.", "CCom"]
+  CT: ["Código del Trabajo", "C.T.", "CT"]
+  CPC: ["Código de Procedimiento Civil", "C.P.C.", "CPC"]
+  CPP: ["Código Procesal Penal", "CPP"]
+  COT: ["Código Orgánico de Tribunales", "COT"]
+  CTrib: ["Código Tributario", "Cód. Tributario"]
+  LSA: ["Ley 18.046", "Ley de Sociedades Anónimas", "LSA"]
+  LGUC: ["Ley General de Urbanismo y Construcciones", "LGUC"]
+  OGUC: ["Ordenanza General de Urbanismo y Construcciones", "OGUC"]

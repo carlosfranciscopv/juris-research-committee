@@ -1,31 +1,70 @@
-"""06: Genera DOSSIER.docx + carpeta organizada en RESEARCH/<slug>_<ts>/."""
+"""06: Genera DOSSIER.DOCX + carpeta organizada en RESEARCH/<slug>_<ts>/."""
 from __future__ import annotations
 import argparse, json, sys, shutil
 from datetime import datetime
 from pathlib import Path
-from common import (RESEARCH_DEFAULT, dump_json, ensure_research_layout,
-                     load_json, log_line, today_report, slugify_tesis)
+from common import (JURIS_CONSTRUCCION_DEFAULT, RESEARCH_DEFAULT, dump_json,
+                     ensure_research_layout, load_json, log_line,
+                     render_sentencia_pdf, today_report, slugify_tesis)
+
+
+def _sanitize_gen(s) -> str:
+    """Sanitiza guiones tipográficos en texto GENERADO (títulos, headings,
+    etiquetas): em-dash y en-dash a guion ASCII. NO aplicar a citas verbatim
+    de sentencias, que se reproducen fieles a la fuente."""
+    return str(s).replace("—", "-").replace("–", "-")
 
 
 def build_docx(triage_data: dict, output_path: Path, log) -> None:
-    """Genera DOSSIER.docx ejecutivo."""
+    """Genera DOSSIER.DOCX ejecutivo con el formato canónico: Garamond 12
+    (cuerpo y encabezados), interlineado 1.0, justificado, página Legal
+    8,5x14, márgenes 2,5 sup/inf y 2,83 izq/der, numeración de páginas."""
     from docx import Document
     from docx.shared import Pt, Cm, RGBColor
     from docx.enum.text import WD_ALIGN_PARAGRAPH
-    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
 
     doc = Document()
-    # Márgenes
+    # Página Legal + márgenes canónicos + numeración de páginas al pie
     for section in doc.sections:
+        section.page_width = Cm(21.59)
+        section.page_height = Cm(35.56)
         section.top_margin = Cm(2.5)
         section.bottom_margin = Cm(2.5)
-        section.left_margin = Cm(2.5)
-        section.right_margin = Cm(2.5)
+        section.left_margin = Cm(2.83)
+        section.right_margin = Cm(2.83)
+        footer_p = section.footer.paragraphs[0]
+        footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        frun = footer_p.add_run()
+        frun.font.name = "Garamond"
+        frun.font.size = Pt(12)
+        fld_begin = OxmlElement("w:fldChar")
+        fld_begin.set(qn("w:fldCharType"), "begin")
+        instr = OxmlElement("w:instrText")
+        instr.set(qn("xml:space"), "preserve")
+        instr.text = "PAGE"
+        fld_end = OxmlElement("w:fldChar")
+        fld_end.set(qn("w:fldCharType"), "end")
+        frun._r.append(fld_begin)
+        frun._r.append(instr)
+        frun._r.append(fld_end)
 
-    # Style normal
+    # Style normal: Garamond 12, interlineado 1.0, justificado
     style = doc.styles["Normal"]
-    style.font.name = "Calibri"
-    style.font.size = Pt(11)
+    style.font.name = "Garamond"
+    style.font.size = Pt(12)
+    style.paragraph_format.line_spacing = 1.0
+    style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+    def add_heading_g(text: str, level: int = 1):
+        """Heading con runs forzados a Garamond 12 bold (formato canónico)."""
+        h = doc.add_heading(_sanitize_gen(text), level=level)
+        for r in h.runs:
+            r.font.name = "Garamond"
+            r.font.size = Pt(12)
+            r.bold = True
+        return h
 
     tesis = triage_data.get("tesis", "")
     stats = triage_data.get("stats", {})
@@ -35,12 +74,12 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
     title = doc.add_paragraph()
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = title.add_run("DOSSIER DE INVESTIGACIÓN JURISPRUDENCIAL")
-    run.bold = True; run.font.size = Pt(16)
+    run.bold = True; run.font.name = "Garamond"; run.font.size = Pt(12)
 
     subtitle = doc.add_paragraph()
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = subtitle.add_run("Comité de Jurisconsultos — análisis automatizado")
-    run.italic = True; run.font.size = Pt(11)
+    run = subtitle.add_run("Comité de Jurisconsultos - análisis automatizado")
+    run.italic = True; run.font.name = "Garamond"; run.font.size = Pt(12)
     run.font.color.rgb = RGBColor(0x55, 0x55, 0x55)
 
     doc.add_paragraph()

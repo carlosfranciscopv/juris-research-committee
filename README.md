@@ -62,7 +62,7 @@ pip install requests beautifulsoup4 pyyaml tenacity python-docx rank-bm25 report
 
 ## Reuso de extractor-jurisprudencia-construccion
 
-Importa `common.py` y heurísticas regex del extractor sin duplicar código. Usa el corpus pre-indexado (1921 sentencias en `JURISPRUDENCIA_CONSTRUCCIÓN/.rag/chunks.jsonl`) como base para búsqueda híbrida (RAG local primero, Solr live fallback).
+Importa `scripts/common.py` del extractor vía importlib (paths, sesión, normalizadores, render PDF); la búsqueda Solr y las heurísticas están reimplementadas localmente en `03_search_solr.py` y `04_normalize.py`. Usa el corpus pre-indexado (1921 sentencias en `JURISPRUDENCIA_CONSTRUCCIÓN/.rag/chunks.jsonl`) como base para búsqueda híbrida (RAG local primero, Solr live fallback).
 
 ## Autor
 

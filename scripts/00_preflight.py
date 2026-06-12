@@ -125,9 +125,13 @@ def main() -> int:
         return 2
     log(f"OK deps: {', '.join(REQUIRED_DEPS)}")
 
+    # Script de re-autenticación local (escribe a _AUTH/ de esta skill)
+    auth_login = Path(__file__).resolve().parent / "auth_login.py"
+
     # 2) storage_state
     if not args.juris_storage.exists():
         log(f"FALLA storage_state inexistente: {args.juris_storage}")
+        log(f"Re-ejecutar: python {auth_login}")
         return 3
     size = args.juris_storage.stat().st_size
     if size < 2000:

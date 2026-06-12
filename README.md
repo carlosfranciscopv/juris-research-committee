@@ -35,11 +35,12 @@ Ejemplos:
 ## Output
 
 Carpeta `RESEARCH/<slug>_<timestamp>/` con:
-- `DOSSIER.docx` — memo ejecutivo con KILL-SHOT, hiperpertinentes, pertinentes, adversa, descartes
-- `INDEX.md` — tabla priorizada navegable
+- `DOSSIER.DOCX` — memo ejecutivo con KILL-SHOT, hiperpertinentes, pertinentes, adversa, descartes
+- `INDEX.MD` — tabla priorizada navegable
+- `PDFS/` — PDFs profesionales de cada sentencia incluida
 - `MD/` — MD-twins de sentencias incluidas con frontmatter enriquecido
-- `triage_log.json` — todas las clasificaciones con justificación
-- `manifest.json` — metadata del run
+- `TRIAGE_LOG.JSON` — todas las clasificaciones con justificación
+- `MANIFEST.JSON` — metadata del run
 
 ## Calificaciones
 

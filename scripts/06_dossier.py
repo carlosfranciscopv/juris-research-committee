@@ -175,7 +175,7 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
     # Sección 4 — HIPERPERTINENTES
     hiper = [s for s in califs if s.get("calificacion") == "HIPERPERTINENTE"]
     if hiper:
-        doc.add_heading("4. Sentencias hiperpertinentes", level=1)
+        add_heading_g("4. Sentencias hiperpertinentes", level=1)
         for s in sorted(hiper, key=lambda x: x.get("score", 0), reverse=True):
             render_sentencia(s, level=2)
 

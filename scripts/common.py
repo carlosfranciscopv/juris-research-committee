@@ -44,11 +44,10 @@ RESEARCH_DEFAULT = Path(
     r"C:\Users\carlos.perezvaldivia\OneDrive - Dentons"
     r"\AAAAAAAAAAA\1_MATERIAL-JURÍDICO\JURISPRUDENCIA_RESEARCH"
 )
-JURIS_STORAGE_DEFAULT = Path(
-    r"C:\Users\carlos.perezvaldivia\.claude\skills\_DEPRECATED"
-    r"\controversias-construccion-chile-detector_2026-04-28\_AUTH"
-    r"\juris_storage.json"
-)
+# Storage de sesión propio de esta skill (estable, fuera de _DEPRECATED).
+# Se regenera con: python scripts/auth_login.py
+JURIS_STORAGE_DEFAULT = (Path(__file__).resolve().parent.parent
+                          / "_AUTH" / "juris_storage.json")
 CORPUS_MASTER_RAG = JURIS_CONSTRUCCION_DEFAULT / ".rag" / "chunks.jsonl"
 CORPUS_MASTER_INDEX = JURIS_CONSTRUCCION_DEFAULT / "MANIFEST.JSON"
 

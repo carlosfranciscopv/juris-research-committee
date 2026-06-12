@@ -273,8 +273,10 @@ def triage_one(unified: dict, plan: dict, doctrina: dict) -> dict:
     año = fm.get("año") or 0
     año_actual = datetime.now().year
     recencia_factor = max(0.3, 1.0 - 0.05 * (año_actual - año))
-    # Unanimidad: si voto disidente está en frontmatter (no detectamos por ahora)
-    unanimidad_factor = 1.0  # default
+    # Unanimidad: detector determinístico de disidencia/prevención sobre
+    # el texto íntegro. Con disidencia detectada baja a 0.7 y bloquea KILL_SHOT.
+    unanime = not detectar_disidencia(unified)
+    unanimidad_factor = 1.0 if unanime else 0.7
     score = (
         0.40 * pron_density
         + 0.25 * t2_overlap

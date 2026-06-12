@@ -142,8 +142,7 @@ def main() -> int:
     # 3) Sesión Solr (rápida — sólo CSRF, no busca docs)
     if not args.skip_session_check:
         if not check_session_csrf(args.juris_storage, log):
-            log("Re-ejecutar: python ../controversias-construccion-chile-detector"
-                "/scripts/auth_login.py")
+            log(f"Re-ejecutar: python {auth_login}")
             return 4
     else:
         log("SKIP verificación sesión (--skip-session-check)")

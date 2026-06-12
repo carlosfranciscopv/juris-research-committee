@@ -87,12 +87,12 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
     doc.add_paragraph()
 
     # Sección 1 — Tesis
-    doc.add_heading("1. Punto a acreditar (tesis)", level=1)
+    add_heading_g("1. Punto a acreditar (tesis)", level=1)
     p = doc.add_paragraph(tesis)
     p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
     # Sección 2 — Resumen
-    doc.add_heading("2. Resumen ejecutivo", level=1)
+    add_heading_g("2. Resumen ejecutivo", level=1)
     doc.add_paragraph(
         f"Total de candidatos analizados: {sum(stats.get(k, 0) for k in ['KILL_SHOT','HIPERPERTINENTE','PERTINENTE','TANGENCIAL','NO_RELEVANTE'])}\n"
         f"  • KILL-SHOT: {stats.get('KILL_SHOT', 0)}\n"

@@ -200,7 +200,7 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
     descartadas = [s for s in califs
                     if s.get("calificacion") in ("TANGENCIAL", "NO_RELEVANTE", "FAILED")]
     if descartadas:
-        doc.add_heading("6. Apéndice — sentencias descartadas", level=1)
+        add_heading_g("6. Apéndice - sentencias descartadas", level=1)
         tbl = doc.add_table(rows=1, cols=3)
         tbl.style = "Light Grid Accent 1"
         hdr = tbl.rows[0].cells

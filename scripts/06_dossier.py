@@ -341,20 +341,20 @@ def main() -> int:
             idx_lines.append("| ROL | Tribunal | Score | Adversa | MD |")
             idx_lines.append("|---|---|---|---|---|")
             for s in sorted(items, key=lambda x: x.get("score", 0), reverse=True):
-                rol_safe = (s.get("rol") or "?").replace("/", "-")
+                rol_safe = (s.get("rol") or "?").replace("/", "-").upper()
                 idx_lines.append(
                     f"| {s.get('rol','')} | {s.get('tribunal','')[:25]} | "
                     f"{s.get('score', 0):.2f} | "
                     f"{'⚠' if s.get('adversa_a_tesis') else ''} | "
-                    f"[MD](MD/{rol_safe}.md) |"
+                    f"[MD](MD/{rol_safe}.MD) |"
                 )
             idx_lines.append("")
-    (dest / "INDEX.md").write_text("\n".join(idx_lines), encoding="utf-8")
-    log(f"  INDEX.md generado")
+    (dest / "INDEX.MD").write_text("\n".join(idx_lines), encoding="utf-8")
+    log(f"  INDEX.MD generado")
 
     # triage_log + manifest
-    dump_json(dest / "triage_log.json", triage_data)
-    dump_json(dest / "manifest.json", {
+    dump_json(dest / "TRIAGE_LOG.JSON", triage_data)
+    dump_json(dest / "MANIFEST.JSON", {
         "tesis": args.tesis, "slug": slug, "timestamp": ts,
         "total_candidatos": len(califs),
         "incluidos_dossier": len(incluidos),

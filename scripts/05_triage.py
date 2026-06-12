@@ -159,12 +159,42 @@ def detectar_adversidad(unified: dict, instituciones: list[dict]) -> tuple[bool,
     return False, None
 
 
-def calificar(score: float, tribunal: str, año: int, jerarquia: str) -> str:
-    """Asigna calificación final."""
+RE_DISIDENCIA = re.compile(
+    r"(voto\s+en\s+contra|voto\s+disidente|disidencia|"
+    r"acordada\s+con\s+el\s+voto|"
+    r"con\s+la\s+prevenci[oó]n\s+de(?:l|\s+la)?\s|"
+    r"se\s+previene\s+que)",
+    re.IGNORECASE)
+
+
+def detectar_disidencia(unified: dict) -> bool:
+    """Detector determinístico de disidencia/prevención sobre el texto íntegro.
+
+    Lee el MD-twin (que incluye el texto completo de la sentencia); si no está
+    disponible, escanea los considerandos extraídos. Marcadores formulaicos:
+    "voto en contra", "disidencia", "acordada con el voto", "con la prevención
+    de", "se previene que". Sin marcador detectado se asume unánime."""
+    texto = ""
+    md_path = unified.get("md_path")
+    if md_path:
+        try:
+            texto = Path(md_path).read_text(encoding="utf-8")
+        except Exception:  # noqa: BLE001
+            texto = ""
+    if not texto:
+        texto = "\n".join(c.get("texto", "")
+                           for c in unified.get("considerandos", []))
+    return bool(RE_DISIDENCIA.search(texto))
+
+
+def calificar(score: float, tribunal: str, año: int, jerarquia: str,
+               unanime: bool = True) -> str:
+    """Asigna calificación final. KILL_SHOT exige sentencia unánime
+    (sin marcadores de disidencia/prevención detectados)."""
     es_cs = "Suprema" in (tribunal or "") or jerarquia == "CS"
     año_actual = datetime.now().year
     es_reciente = (año_actual - (año or 0)) <= 5
-    if score >= THRESHOLDS["KILL_SHOT"] and es_cs and es_reciente:
+    if score >= THRESHOLDS["KILL_SHOT"] and es_cs and es_reciente and unanime:
         return "KILL_SHOT"
     if score >= THRESHOLDS["HIPER"]:
         return "HIPERPERTINENTE"

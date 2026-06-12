@@ -115,10 +115,10 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
 
     # Helper render por sentencia
     def render_sentencia(s: dict, level: int = 2):
-        doc.add_heading(
-            f"ROL {s.get('rol', '?')} — {s.get('tribunal', '?')}"
+        add_heading_g(
+            f"ROL {s.get('rol', '?')} - {s.get('tribunal', '?')}"
             f"{' (Sala ' + s['sala'] + ')' if s.get('sala') else ''}"
-            f" — {s.get('fecha', '?')}",
+            f" - {s.get('fecha', '?')}",
             level=level)
         if s.get("caratulado"):
             p = doc.add_paragraph()

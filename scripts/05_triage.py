@@ -352,7 +352,7 @@ def main() -> int:
     if not candidates:
         log("FALLA: no hay candidatos para triagiar (corpus master vacío + Solr no recurrió)")
         # Generar reporte de gap
-        gap = paths["work"] / f"COVERAGE_GAP_{slug}.md"
+        gap = paths["work"] / f"COVERAGE_GAP_{slug.upper()}.MD"
         gap.write_text(
             f"# COVERAGE GAP REPORT - {args.tesis}\n\n"
             f"Ningún candidato fue encontrado para esta tesis.\n\n"

@@ -40,8 +40,8 @@ def detect_anti_criterios(considerando: dict, texto_completo: str,
     if len(text) > 200 and quote_chars / len(text) > 0.05:
         # heurística simple: muchas comillas = transcripción dominante
         flags.append("AC1_transcripcion_norma")
-    # AC2: pos_relativa < 0.6 = no resolutivo
-    if considerando.get("pos_relativa", 1.0) < 0.5:
+    # AC2: pos_relativa < 0.6 = fuera del último 40% del texto (no resolutivo)
+    if considerando.get("pos_relativa", 1.0) < 0.6:
         flags.append("AC2_no_resolutivo")
     # AC3: cita a otra sentencia
     if re.search(r"(ROL\s+N°|Excma\.\s+Corte|como\s+ha\s+dicho\s+esta\s+Corte"

@@ -354,7 +354,7 @@ def main() -> int:
         # Generar reporte de gap
         gap = paths["work"] / f"COVERAGE_GAP_{slug}.md"
         gap.write_text(
-            f"# COVERAGE GAP REPORT — {args.tesis}\n\n"
+            f"# COVERAGE GAP REPORT - {args.tesis}\n\n"
             f"Ningún candidato fue encontrado para esta tesis.\n\n"
             f"**Sugerencias**:\n"
             f"- Reformular la tesis con instituciones jurídicas más específicas\n"

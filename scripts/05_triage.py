@@ -287,7 +287,8 @@ def triage_one(unified: dict, plan: dict, doctrina: dict) -> dict:
 
     # Calificación
     cal = calificar(score, fm.get("tribunal"), año,
-                     "CS" if jerarquia_factor == 1.0 else "CA")
+                     "CS" if jerarquia_factor == 1.0 else "CA",
+                     unanime=unanime)
 
     # Adversidad
     adversa, antonimo = detectar_adversidad(unified, instituciones)

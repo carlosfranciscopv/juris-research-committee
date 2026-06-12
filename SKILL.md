@@ -23,12 +23,12 @@ Ejemplos:
 ## Qué produce
 
 Carpeta `RESEARCH/<slug-tesis>_<timestamp>/` con:
-- **DOSSIER.docx** — memo ejecutivo: KILL-SHOT, HIPERPERTINENTES, PERTINENTES, adversa (si la hay), descartes con razón, bibliografía
-- **INDEX.md** — tabla priorizada navegable
-- **PDFS/** — PDFs profesionales de cada sentencia
+- **DOSSIER.DOCX** — memo ejecutivo: KILL-SHOT, HIPERPERTINENTES, PERTINENTES, adversa (si la hay), descartes con razón, bibliografía
+- **INDEX.MD** — tabla priorizada navegable
+- **PDFS/** — PDFs profesionales de cada sentencia incluida (copia del master local o render desde texto Solr)
 - **MD/** — MD-twins con frontmatter enriquecido
-- **triage_log.json** — todas las clasificaciones con justificación
-- **manifest.json** — metadata del run
+- **TRIAGE_LOG.JSON** — todas las clasificaciones con justificación
+- **MANIFEST.JSON** — metadata del run
 
 ## Arquitectura
 

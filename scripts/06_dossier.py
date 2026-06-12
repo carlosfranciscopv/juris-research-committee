@@ -151,7 +151,7 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
         cv = s.get("cita_verbatim") or {}
         if cv.get("texto"):
             p = doc.add_paragraph()
-            run = p.add_run(f"Cita verbatim — Considerando {cv.get('considerando', '?')}°:")
+            run = p.add_run(f"Cita verbatim - Considerando {cv.get('considerando', '?')}°:")
             run.bold = True
             p = doc.add_paragraph()
             p.paragraph_format.left_indent = Cm(1)

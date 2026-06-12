@@ -182,7 +182,7 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
     # Sección 5 — PERTINENTES (tabla compacta)
     perti = [s for s in califs if s.get("calificacion") == "PERTINENTE"]
     if perti:
-        doc.add_heading("5. Sentencias pertinentes (tabla)", level=1)
+        add_heading_g("5. Sentencias pertinentes (tabla)", level=1)
         tbl = doc.add_table(rows=1, cols=4)
         tbl.style = "Light Grid Accent 1"
         hdr = tbl.rows[0].cells

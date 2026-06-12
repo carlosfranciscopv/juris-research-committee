@@ -44,10 +44,18 @@ RESEARCH_DEFAULT = Path(
     r"C:\Users\carlos.perezvaldivia\OneDrive - Dentons"
     r"\AAAAAAAAAAA\1_MATERIAL-JURÍDICO\JURISPRUDENCIA_RESEARCH"
 )
-# Storage de sesión propio de esta skill (estable, fuera de _DEPRECATED).
-# Se regenera con: python scripts/auth_login.py
-JURIS_STORAGE_DEFAULT = (Path(__file__).resolve().parent.parent
-                          / "_AUTH" / "juris_storage.json")
+# Storage de sesión juris.pjud.cl. Ubicación estable: _AUTH/ propia de esta
+# skill (se regenera con: python scripts/auth_login.py). Fallback transitorio:
+# el storage legacy del detector deprecado, mientras no exista el local.
+_JURIS_STORAGE_LOCAL = (Path(__file__).resolve().parent.parent
+                         / "_AUTH" / "juris_storage.json")
+_JURIS_STORAGE_LEGACY = Path(
+    r"C:\Users\carlos.perezvaldivia\.claude\skills\_DEPRECATED"
+    r"\controversias-construccion-chile-detector_2026-04-28\_AUTH"
+    r"\juris_storage.json"
+)
+JURIS_STORAGE_DEFAULT = (_JURIS_STORAGE_LOCAL if _JURIS_STORAGE_LOCAL.exists()
+                          else _JURIS_STORAGE_LEGACY)
 CORPUS_MASTER_RAG = JURIS_CONSTRUCCION_DEFAULT / ".rag" / "chunks.jsonl"
 CORPUS_MASTER_INDEX = JURIS_CONSTRUCCION_DEFAULT / "MANIFEST.JSON"
 

@@ -58,7 +58,7 @@ Reglas duras: sin cita verbatim no entra al dossier. Adversa entra marcada con s
 
 - **NO requiere API LLM** — triage es 100% determinístico (regex + scoring + taxonomía yaml).
 - **NO requiere intervención manual** — modo `--manual-review` es opcional.
-- **NO falla silenciosamente** — si no hay cobertura, aborta con `COVERAGE_GAP_REPORT.md` antes de generar dossier vacío.
+- **NO falla silenciosamente** — si no hay cobertura, aborta (exit 9) generando `_WORK/COVERAGE_GAP_<SLUG>.MD` antes de producir un dossier vacío.
 
 ## Reuso de extractor-jurisprudencia-construccion
 

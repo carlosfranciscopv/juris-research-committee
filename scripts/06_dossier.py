@@ -317,18 +317,22 @@ def main() -> int:
         src = s.get("md_path")
         if src and Path(src).exists():
             try:
-                rol_safe = (s.get("rol") or "unknown").replace("/", "-")
-                shutil.copy2(src, dest / "MD" / f"{rol_safe}.md")
+                rol_safe = (s.get("rol") or "unknown").replace("/", "-").upper()
+                shutil.copy2(src, dest / "MD" / f"{rol_safe}.MD")
                 copied_md += 1
             except Exception as e:
                 log(f"  WARN copia MD {s.get('rol')}: {e}")
     log(f"  MD-twins copiados: {copied_md}")
 
-    # DOSSIER.docx
-    build_docx(triage_data, dest / "DOSSIER.docx", log)
+    # PDFs profesionales de cada sentencia incluida
+    copied_pdf = populate_pdfs(incluidos, dest, log)
+    log(f"  PDFs en PDFS/: {copied_pdf}")
 
-    # INDEX.md
-    idx_lines = [f"# INDEX — {args.tesis}", "", f"_Generado: {ts}_", ""]
+    # DOSSIER.DOCX
+    build_docx(triage_data, dest / "DOSSIER.DOCX", log)
+
+    # INDEX.MD
+    idx_lines = [f"# INDEX - {args.tesis}", "", f"_Generado: {ts}_", ""]
     for cal in ["KILL_SHOT", "HIPERPERTINENTE", "PERTINENTE"]:
         items = [s for s in califs if s.get("calificacion") == cal]
         if items:

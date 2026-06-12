@@ -62,4 +62,4 @@ Reglas duras: sin cita verbatim no entra al dossier. Adversa entra marcada con s
 
 ## Reuso de extractor-jurisprudencia-construccion
 
-Importa `common.py`, `01_harvest.py:buscar`, `02_extract.py` heurísticas. Sin cambios destructivos a la skill original.
+Importa `scripts/common.py` del extractor vía importlib (paths, sesión, normalizadores, render PDF); la búsqueda Solr y las heurísticas de considerandos/normas están reimplementadas localmente en `03_search_solr.py` y `04_normalize.py`. Sin cambios destructivos a la skill original.

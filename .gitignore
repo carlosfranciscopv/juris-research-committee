@@ -23,3 +23,6 @@ _WORK/
 _REPORTS/
 RESEARCH/
 _BACKUPS/
+
+# Credenciales de sesión (nunca al repo)
+_AUTH/

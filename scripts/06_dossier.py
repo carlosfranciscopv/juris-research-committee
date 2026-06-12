@@ -212,7 +212,74 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
             row[2].text = s.get("razon_descarte", "")[:150]
 
     doc.save(output_path)
-    log(f"  DOSSIER.docx → {output_path}")
+    log(f"  DOSSIER.DOCX -> {output_path}")
+
+
+def _parse_md_twin(md_path: Path) -> tuple[dict, str]:
+    """Lee un MD-twin normalizado: devuelve (frontmatter, texto íntegro)."""
+    import yaml
+    raw = md_path.read_text(encoding="utf-8")
+    fm, body = {}, raw
+    if raw.startswith("---"):
+        parts = raw.split("---", 2)
+        if len(parts) >= 3:
+            try:
+                fm = yaml.safe_load(parts[1]) or {}
+            except Exception:  # noqa: BLE001
+                fm = {}
+            body = parts[2]
+    marker = "## Texto íntegro"
+    idx = body.find(marker)
+    texto = body[idx + len(marker):].strip() if idx >= 0 else body.strip()
+    return fm, texto
+
+
+def populate_pdfs(incluidos: list[dict], dest: Path, log) -> int:
+    """Puebla dest/PDFS: copia el PDF master (source=local) o lo genera con
+    render_sentencia_pdf desde el texto normalizado (source=solr)."""
+    count = 0
+    for s in incluidos:
+        src_md = s.get("md_path")
+        if not (src_md and Path(src_md).exists()):
+            log(f"  WARN PDF {s.get('rol')}: MD-twin no disponible")
+            continue
+        try:
+            fm, texto = _parse_md_twin(Path(src_md))
+        except Exception as e:  # noqa: BLE001
+            log(f"  WARN PDF {s.get('rol')}: error leyendo MD-twin: {e}")
+            continue
+        rol_safe = (s.get("rol") or "unknown").replace("/", "-").upper()
+        # source=local: copiar el PDF master del corpus
+        if s.get("source") == "local" and fm.get("archivo_pdf_master"):
+            master = Path(fm["archivo_pdf_master"])
+            if not master.is_absolute():
+                master = JURIS_CONSTRUCCION_DEFAULT / master
+            if master.exists():
+                try:
+                    shutil.copy2(master, dest / "PDFS" / master.name)
+                    count += 1
+                    continue
+                except Exception as e:  # noqa: BLE001
+                    log(f"  WARN copia PDF master {s.get('rol')}: {e}")
+        # source=solr (o fallback): generar PDF desde el texto normalizado
+        if not texto:
+            log(f"  WARN PDF {s.get('rol')}: sin texto para render")
+            continue
+        meta = {
+            "rol": s.get("rol"),
+            "caratulado_oficial": s.get("caratulado"),
+            "tribunal": s.get("tribunal"),
+            "sala": s.get("sala"),
+            "fecha_sentencia": s.get("fecha"),
+            "tipo_recurso": fm.get("tipo_recurso"),
+            "resultado_recurso": fm.get("resultado_recurso"),
+            "redactor": fm.get("redactor"),
+            "fuente_pjud_url": fm.get("url_acceso") or s.get("url_acceso"),
+        }
+        if render_sentencia_pdf(meta, texto, dest / "PDFS" / f"{rol_safe}.PDF",
+                                 log):
+            count += 1
+    return count
 
 
 def main() -> int:

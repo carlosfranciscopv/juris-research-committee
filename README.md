@@ -14,7 +14,7 @@ Skill de Claude Code que actúa como un **comité de jurisconsultos automatizado
 | 03 | `03_search_solr.py` | Solr live POST a juris.pjud.cl si cobertura local insuficiente |
 | 04 | `04_normalize.py` | Parsing texto → MD-twins normalizados con frontmatter |
 | 05 | `05_triage.py` | **Triage 100% determinístico**: 5 tests + scoring + adversidad |
-| 06 | `06_dossier.py` | DOSSIER.docx + INDEX.md + carpeta organizada |
+| 06 | `06_dossier.py` | DOSSIER.DOCX + INDEX.MD + carpeta organizada |
 
 ## Restricciones
 

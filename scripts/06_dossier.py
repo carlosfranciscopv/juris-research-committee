@@ -168,7 +168,7 @@ def build_docx(triage_data: dict, output_path: Path, log) -> None:
     # Sección 3 — KILL-SHOT
     kill = [s for s in califs if s.get("calificacion") == "KILL_SHOT"]
     if kill:
-        doc.add_heading("3. Autoridades centrales (KILL-SHOT)", level=1)
+        add_heading_g("3. Autoridades centrales (KILL-SHOT)", level=1)
         for s in sorted(kill, key=lambda x: x.get("score", 0), reverse=True):
             render_sentencia(s, level=2)
 
